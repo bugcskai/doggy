@@ -1,0 +1,13 @@
+The Dog Spotter Backend Challenge
+
+Requirements:
+Stack - CakePHP, VueJs, MySQL. No UI frameworks or style libraries. CSS/SCSS only. Deploy on AWS. You can create a free account here - https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc
+
+Task - Where have you seen different dog breeds?
+
+Build a simple single page app that:
+	- allows users to input the dog names, dog breeds, locations, and time they saw these dogs and then save this information in the database.
+	- represents all of the locations where these dog have been seen with Google Maps - you should use the relevant Google Maps API information - https://developers.google.com/maps/documentation
+	- each dog breed should be represented by a image of that dog breed on the map
+
+To submit this task, please provide a github repository with the solution and a link to access the deployed solution.
