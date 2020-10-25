@@ -74,10 +74,22 @@ $routes->scope('/', function (RouteBuilder $builder) {
 });
 
 
-$routes->connect('/doggy', ['controller' => 'App', 'action' => 'display', 'index']);
+$routes->scope('/doggy', function (RouteBuilder $builder) {
+    $builder->connect('/', [
+        'controller' => 'Pages',
+        'action' => 'display',
+        'index'
+    ]);
 
-$routes->scope('/dog', function (RouteBuilder $builder) {
-    $builder->connect('/d', ['controller' => 'App', 'action' => 'display', 'index']);
+    $builder->connect('/search-location', [
+        'controller' => 'Api',
+        'action' => 'searchPlace',
+    ]);
+
+    $builder->connect('/add-dog-place', [
+        'controller' => 'Api',
+        'action' => 'addDogsPlaces',
+    ]);
 
     $builder->fallbacks();
 
