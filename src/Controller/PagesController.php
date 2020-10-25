@@ -70,4 +70,10 @@ class PagesController extends AppController
             throw new NotFoundException();
         }
     }
+
+    public function home(string ...$path)
+    {
+        die( "yo");
+        return $this->render(implode('/', $path));
+    }
 }

@@ -73,6 +73,16 @@ $routes->scope('/', function (RouteBuilder $builder) {
     $builder->fallbacks();
 });
 
+
+$routes->connect('/doggy', ['controller' => 'App', 'action' => 'display', 'index']);
+
+$routes->scope('/dog', function (RouteBuilder $builder) {
+    $builder->connect('/d', ['controller' => 'App', 'action' => 'display', 'index']);
+
+    $builder->fallbacks();
+
+});
+
 /*
  * If you need a different set of middleware or none at all,
  * open new scope and define routes there.

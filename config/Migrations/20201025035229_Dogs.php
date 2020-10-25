@@ -14,5 +14,39 @@ class Dogs extends AbstractMigration
      */
     public function change()
     {
+        $table = $this->table('dogs');
+        $table->addColumn('name', 'string', [
+            'default' => null,
+            'limit' => 255,
+            'null' => false,
+        ]);
+        $table->addColumn('breed', 'string', [
+            'default' => null,
+            'limit' => 255,
+            'null' => false,
+        ]);
+        $table->addColumn('time_located', 'datetime', [
+            'default' => null,
+            'null' => false,
+        ]);
+        $table->addColumn('picture', 'string', [
+            'default' => null,
+            'limit' => 255,
+            'null' => false,
+        ]);
+        $table->addColumn('place_id', 'integer', [
+            'default' => null,
+            'null' => false,
+        ]);
+        $table->addColumn('created', 'datetime', [
+            'default' => null,
+            'null' => false,
+        ]);
+        $table->addColumn('modified', 'datetime', [
+            'default' => null,
+            'null' => false,
+        ]);
+        $table->addForeignKey('place_id','places','id');
+        $table->create();
     }
 }
