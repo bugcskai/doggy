@@ -19,11 +19,12 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Controller\AppController;
-use App\Model\Entity\Dog;
-use App\Model\Entity\Place;
 use SKAgarwal\GoogleApi\PlacesApi;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\BadRequestException;
+use Cake\Validation\Validator;
+use Exception;
 
 /**
  * Application Controller
@@ -56,9 +57,8 @@ class ApiController extends AppController
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Security');
-
-        $this->Dog = new Dog();
-        $this->Place = new Place();
+        $this->Dog = $this->getTableLocator()->get('dogs');
+        $this->Place = $this->getTableLocator()->get('places');
         $this->GooglePlacesWrapper = new PlacesApi(env('GOOGLE_MAP_API'));
     }
 
@@ -89,19 +89,78 @@ class ApiController extends AppController
         return $this->RequestHandler->renderAs($this, 'json');
     }
 
+    public function getDogs()
+    {
+        $allDogs = $this->Dog->find('all')->all();
+        $this->set(['response' => $allDogs->toArray()]);
+        $this->viewBuilder()->setOption('serialize', true);
+        return $this->RequestHandler->renderAs($this, 'json');
+    }
+
     public function addDogsPlaces()
     {
+        try {
+            $jsonData = $this->request->getData();
+        } catch (Exception $e) {
+            throw new BadRequestException($e->getMessage());
+        }
+
+        $jsonValidator = new Validator();
+        $dogValidator = new Validator();
+        $placeValidator = new Validator();
+        $dogValidator->requirePresence('name')
+        ->notEmptyString('name', 'Please fill dog name')
+        ->add('name', [
+            'length' => [
+                'rule' => ['minLength', 2],
+                'message' => 'Titles need to be at least 2 characters long',
+            ]
+        ])->requirePresence('breed')
+        ->requirePresence('time_located');
+
+        $placeValidator
+        ->requirePresence('location')
+        ->requirePresence('name')
+        ->add('location', [
+            'length' => [
+                'rule' => ['minLength', 5],
+                'message' => 'Titles need to be at least 5 characters long',
+            ]
+        ]);
+
+        $jsonValidator
+        ->requirePresence('dog')
+        ->addNested('dog', $dogValidator)
+        ->requirePresence('location')
+        ->addNested('location', $placeValidator);
+
+        $errors = $jsonValidator->validate((array)$jsonData);
+
+        if (!empty($errors)) {
+            $this->set(['response' => ["error" => true, "response" => $errors]]);
+            $this->viewBuilder()->setOption('serialize', true);
+            return $this->RequestHandler->renderAs($this, 'json');
+        }
+
         $dog = $this->Dog->newEmptyEntity();
         $place = $this->Place->newEmptyEntity();
+        $result = "";
 
         if ($this->request->is('post')) {
-            $dog = $this->Dog->patchEntity($dog, $this->request->getData("dog"));
-            $place = $this->Place->patchEntity($place, $this->request->getData("place"));
+            $dog = $this->Dog->patchEntity($dog, $jsonData['dog']);
+            $place = $this->Place->patchEntity($place, $jsonData['location']);
 
-            if ($this->Dog->save($dog) && $this->Place->save($place)) {
-                $result = ['message' => 'Dog and Places are saved','error' => false];
-            } else {
-                $result = ['message' => 'problem saving Dog and Places','error' => true];
+            try {
+                if ($this->Place->save($place)) {
+                    $dog->place_id = $place->id;
+                    if ($this->Dog->save($dog)) {
+                        $result = ['message' => 'Dog and Places are saved','error' => false];
+                    } else {
+                        $result = ['message' => 'problem saving Dog and Places','error' => true];
+                    }
+                }
+            } catch (Exception $e) {
+                throw $e; //rethrow upwards
             }
         }
 

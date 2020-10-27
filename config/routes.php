@@ -75,6 +75,7 @@ $routes->scope('/', function (RouteBuilder $builder) {
 
 
 $routes->scope('/doggy', function (RouteBuilder $builder) {
+    $builder->applyMiddleware('Token');
     $builder->connect('/', [
         'controller' => 'Pages',
         'action' => 'display',
@@ -91,9 +92,13 @@ $routes->scope('/doggy', function (RouteBuilder $builder) {
         'action' => 'addDogsPlaces',
     ]);
 
-    $builder->fallbacks();
+    $builder->connect('/get-dogs', [
+        'controller' => 'Api',
+        'action' => 'getDogs',
+    ]);
 
-});
+    $builder->fallbacks();
+})->applyMiddleware('Token');
 
 /*
  * If you need a different set of middleware or none at all,

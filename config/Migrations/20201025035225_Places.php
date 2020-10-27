@@ -25,12 +25,12 @@ class Places extends AbstractMigration
             'null' => false,
         ]);
         $table->addColumn('created', 'datetime', [
-            'default' => null,
-            'null' => false,
+            'default' => 'CURRENT_TIMESTAMP',
+            'null' => true,
         ]);
         $table->addColumn('modified', 'datetime', [
-            'default' => null,
-            'null' => false,
+            'default' => 'CURRENT_TIMESTAMP',
+            'null' => true,
         ]);
         $table->create(); 
     }

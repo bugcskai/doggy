@@ -25,6 +25,8 @@ use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
+use Cake\Routing\RouteBuilder;
+use App\Middleware\Token;
 
 /**
  * Application setup class.
@@ -93,6 +95,12 @@ class Application extends BaseApplication
             ->add(new BodyParserMiddleware());
 
         return $middlewareQueue;
+    }
+
+    public function routes(RouteBuilder $routes): void
+    {
+        $routes->registerMiddleware('Token', new Token());
+        parent::routes($routes);
     }
 
     /**

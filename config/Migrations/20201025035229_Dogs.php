@@ -26,25 +26,25 @@ class Dogs extends AbstractMigration
             'null' => false,
         ]);
         $table->addColumn('time_located', 'datetime', [
-            'default' => null,
+            'default' => 'CURRENT_TIMESTAMP',
             'null' => false,
         ]);
         $table->addColumn('picture', 'string', [
             'default' => null,
             'limit' => 255,
-            'null' => false,
+            'null' => true,
         ]);
         $table->addColumn('place_id', 'integer', [
             'default' => null,
             'null' => false,
         ]);
         $table->addColumn('created', 'datetime', [
-            'default' => null,
-            'null' => false,
+            'default' => 'CURRENT_TIMESTAMP',
+            'null' => true,
         ]);
         $table->addColumn('modified', 'datetime', [
-            'default' => null,
-            'null' => false,
+            'default' => 'CURRENT_TIMESTAMP',
+            'null' => true,
         ]);
         $table->addForeignKey('place_id','places','id');
         $table->create();
