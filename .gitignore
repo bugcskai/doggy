@@ -26,6 +26,7 @@ Thumbs.db
 *~
 *.swp
 *.swo
+node_modules
 # sublime text & textmate
 *.sublime-*
 *.stTheme.cache
