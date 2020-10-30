@@ -11,7 +11,7 @@ use Cake\Validation\Validator;
 /**
  * Dogs Model
  *
- * @property \App\Model\Table\PlacesTable&\Cake\ORM\Association\BelongsTo $Places
+ * @property \App\Model\Table\PlacesTable&\Cake\ORM\Association\hasOne $Places
  *
  * @method \App\Model\Entity\Dog newEmptyEntity()
  * @method \App\Model\Entity\Dog newEntity(array $data, array $options = [])
@@ -47,10 +47,10 @@ class DogsTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Places', [
-            'foreignKey' => 'place_id',
-            'joinType' => 'INNER',
-        ]);
+        $this->hasOne('Places')
+            ->setName('Places')
+            ->setBindingKey('place_id')
+            ->setForeignKey('id');
     }
 
     /**
@@ -79,14 +79,12 @@ class DogsTable extends Table
 
         $validator
             ->dateTime('time_located')
-            ->requirePresence('time_located', 'create')
             ->notEmptyDateTime('time_located');
 
         $validator
             ->scalar('picture')
             ->maxLength('picture', 255)
-            ->requirePresence('picture', 'create')
-            ->notEmptyString('picture');
+            ->allowEmptyString('picture');
 
         return $validator;
     }
@@ -100,7 +98,7 @@ class DogsTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add($rules->existsIn(['place_id'], 'Places'), ['errorField' => 'place_id']);
+        $rules->add($rules->existsIn(['id'], 'Places'), ['errorField' => 'place_id']);
 
         return $rules;
     }

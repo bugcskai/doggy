@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Model\Entity;
@@ -13,10 +12,10 @@ use Cake\ORM\Entity;
  * @property string $name
  * @property string $breed
  * @property \Cake\I18n\FrozenTime $time_located
- * @property string $picture
+ * @property string|null $picture
  * @property int $place_id
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property \Cake\I18n\FrozenTime|null $created
+ * @property \Cake\I18n\FrozenTime|null $modified
  *
  * @property \App\Model\Entity\Place $place
  */

@@ -97,6 +97,11 @@ $routes->scope('/doggy', function (RouteBuilder $builder) {
         'action' => 'getDogs',
     ]);
 
+    $builder->connect('/get-place-details', [
+        'controller' => 'Api',
+        'action' => 'getPlaceDetails',
+    ]);
+
     $builder->fallbacks();
 })->applyMiddleware('Token');
 

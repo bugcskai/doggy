@@ -8,6 +8,7 @@
         required: false,
         default: () => [],
       },
+
       isAsync: {
         type: Boolean,
         required: false,
@@ -46,25 +47,32 @@
           return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
         });
       },
+
       setResult(result) {
+        this.$emit('selected', result);
+
         this.search = result;
         this.isOpen = false;
       },
+      
       onArrowDown() {
         if (this.arrowCounter < this.results.length) {
           this.arrowCounter = this.arrowCounter + 1;
         }
       },
+
       onArrowUp() {
         if (this.arrowCounter > 0) {
           this.arrowCounter = this.arrowCounter -1;
         }
       },
+
       onEnter() {
         this.search = this.results[this.arrowCounter];
         this.isOpen = false;
         this.arrowCounter = -1;
       },
+
       handleClickOutside(evt) {
         if (!this.$el.contains(evt.target)) {
           this.isOpen = false;
@@ -72,6 +80,7 @@
         }
       }
     },
+
     watch: {
       items: function (val, oldValue) {
         // actually compare them        
@@ -81,9 +90,11 @@
         }
       },
     },
+
     mounted() {
       document.addEventListener('click', this.handleClickOutside)
     },
+    
     destroyed() {
       document.removeEventListener('click', this.handleClickOutside)
     }

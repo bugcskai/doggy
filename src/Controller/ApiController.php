@@ -57,8 +57,8 @@ class ApiController extends AppController
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Security');
-        $this->Dog = $this->getTableLocator()->get('dogs');
-        $this->Place = $this->getTableLocator()->get('places');
+        $this->Dog = $this->getTableLocator()->get('Dogs');
+        $this->Place = $this->getTableLocator()->get('Places');
         $this->GooglePlacesWrapper = new PlacesApi(env('GOOGLE_MAP_API'));
     }
 
@@ -66,7 +66,7 @@ class ApiController extends AppController
     {
         parent::beforeFilter($event);
 
-        $this->Security->setConfig('unlockedActions', ['searchPlace', 'addDogsPlaces','search']);
+        $this->Security->setConfig('unlockedActions', ['searchPlace', 'addDogsPlaces','search', 'getPlaceDetails']);
     }
 
     public function index()
@@ -91,8 +91,29 @@ class ApiController extends AppController
 
     public function getDogs()
     {
-        $allDogs = $this->Dog->find('all')->all();
+        $allDogs = $this->Dog->find()->contain(['Places'])->all();
         $this->set(['response' => $allDogs->toArray()]);
+        $this->viewBuilder()->setOption('serialize', true);
+        return $this->RequestHandler->renderAs($this, 'json');
+    }
+
+    public function getPlaceDetails()
+    {
+        try {
+            $jsonData = $this->request->getData();
+        } catch (Exception $e) {
+            throw new BadRequestException($e->getMessage());
+        }
+
+        $query = $jsonData['place_id'];
+
+        if (!isset($query)) {
+            $response = ['response' => 'No search query specified','error' => true];
+        } else {
+            $response = ['response' => $this->GooglePlacesWrapper->placeDetails($query), 'error' => false];
+        }
+
+        $this->set(['response' => $response]);
         $this->viewBuilder()->setOption('serialize', true);
         return $this->RequestHandler->renderAs($this, 'json');
     }
@@ -142,18 +163,18 @@ class ApiController extends AppController
             return $this->RequestHandler->renderAs($this, 'json');
         }
 
-        $dog = $this->Dog->newEmptyEntity();
+        $dog = $this->getTableLocator()->get('dogs')->newEmptyEntity();
         $place = $this->Place->newEmptyEntity();
         $result = "";
 
-        if ($this->request->is('post')) {
+        if ($this->request->is('post') || $this->request->is('put')) {
             $dog = $this->Dog->patchEntity($dog, $jsonData['dog']);
             $place = $this->Place->patchEntity($place, $jsonData['location']);
 
             try {
                 if ($this->Place->save($place)) {
                     $dog->place_id = $place->id;
-                    if ($this->Dog->save($dog)) {
+                    if ($this->getTableLocator()->get('dogs')->save($dog)) {
                         $result = ['message' => 'Dog and Places are saved','error' => false];
                     } else {
                         $result = ['message' => 'problem saving Dog and Places','error' => true];

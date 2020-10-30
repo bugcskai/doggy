@@ -14,7 +14,7 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\Dog[] $dogs
+ * @property \App\Model\Entity\Dog $dog
  */
 class Place extends Entity
 {
@@ -32,6 +32,6 @@ class Place extends Entity
         'location' => true,
         'created' => true,
         'modified' => true,
-        'dogs' => true,
+        'dog' => true,
     ];
 }
