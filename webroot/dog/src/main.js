@@ -7,7 +7,7 @@ Vue.config.devtools = true
 
 Vue.use(VueGoogleMaps, {
   load: {
-    key: "AIzaSyAvN-whWf7appqINl4lpCStDb6xAsVm44k",
+    key: process.env.VUE_APP_GOOGLEMAPS_APIKEY,
     libraries: "places" 
   }
 });
